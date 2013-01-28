@@ -5,36 +5,15 @@
  * @version 1-16-13
  */
 public class Counter implements java.lang.Runnable {
-    
+    // BEGIN Static Section
     /** Holds the running total. */
     public static long sum = 0;
     /** Holds the current value to add to sum. */
     public static long num = 0;
     /** Holds N, the number of integers to sum. */
-    final public static int size = 10000000;
-    public static boolean runSynchronized = false;
-    
-    /**
-     * Perform one computation: (1)add one to num and then (2)add num into sum.
-     */
-    void count() {
-        //System.out.println( "Count" );
-        num = 1;
-        sum += num;
-            //System.out.println( "num: " + Counter.num );
-            //System.out.println( "sum: " + Counter.sum );
-    }
-    
-    /**
-     * A synchronized version of count().
-     */
-    void countSynched() {
-        //System.out.println( "countSynched" );
-        synchronized ( Counter.class ) {
-            num = 1;
-            sum += num;
-        }
-    }
+    final public static int size = 1000000;
+    /** Holds the maximum number of threads. */
+    static final int THREADS = 4;
     
     /**
      * Initializes the Counter objects Creates the Threads Starts 
@@ -46,83 +25,146 @@ public class Counter implements java.lang.Runnable {
      * 3. Starts the Threads
      * 4. Waits for all Threads to complete
      * 5. Prints results
+     * 
+     * @param args not used.
      */
     static void main( String[] args ) {
-        final int THREADS = 2;
-        Counter.num = 0;
-        Counter.sum = 0;
-        Counter.runSynchronized = false;
         try {
+            Counter.num = 0;
+            Counter.sum = 0;
             long startTime = System.nanoTime();
-            Thread thread = new Thread( new Counter() );
+            Thread thread = new Thread( new Counter( size, false ) );
             thread.start();
+            // Wait for thread to finish.
             thread.join();
-            System.out.println( "Seconds: " + ( (System.nanoTime() - startTime) ) );
+            // Print report.
+            System.out.println( "Single Threaded-------------------------" );
+            System.out.println( "Seconds: " + ( 
+                ( (double)(System.nanoTime() - startTime) ) / 1000000000
+            ) );
             System.out.println( "num: " + Counter.num );
             System.out.println( "sum: " + Counter.sum );
-            
+            System.out.println( "Threads: 1" );
+            System.out.println( "Single Threaded-------------------------" );
         }
         catch ( Exception e ) {
+            e.printStackTrace();
         }
-        Counter.num = 0;
-        Counter.sum = 0;
-        Counter.runSynchronized = false;
-        try {
-            long startTime = System.nanoTime();
-            Thread[] array = new Thread[THREADS];
-            for( int i = 0; i < THREADS; ++i ) {
-                array[i] = new Thread( new Counter() );
-                array[i].start();
+        for ( int threads = 2; threads <= THREADS; ++threads ) {
+            // Unsynchronized threads.
+            try {
+                Counter.num = 0;
+                Counter.sum = 0;
+                int delagatedIterations = size / threads;
+                long startTime = System.nanoTime();
+                Thread[] array = new Thread[THREADS];
+                // Spawn each thread.
+                for ( int i = 0; i < threads; ++i ) {
+                    array[i] = new Thread( 
+                        new Counter( delagatedIterations, false )
+                    );
+                    array[i].start();
+                }
+                // Wait for each thread to finish.
+                for ( int i = 0; i < threads; ++i ) {
+                    array[i].join();
+                }
+                // Print out report.
+                System.out.println( "Multi Threaded, Unsynchronized------" );
+                System.out.println( "Seconds: " + ( 
+                    ( (double)(System.nanoTime() - startTime) ) / 1000000000 
+                ) );
+                System.out.println( "num: " + Counter.num );
+                System.out.println( "sum: " + Counter.sum );
+                System.out.println( "Threads: " + threads );
+                System.out.println( "Multi Threaded, Unsynchronized------" );
+                
             }
-            for( int i = 0; i < THREADS; ++i ) {
-                array[i].join();
+            catch ( Exception e ) {
+                e.printStackTrace();
             }
-            System.out.println( "Seconds: " + ( (System.nanoTime() - startTime)) );
-            System.out.println( "num: " + Counter.num );
-            System.out.println( "sum: " + Counter.sum );
-            
-        }
-        catch ( Exception e ) {
-        }
-        Counter.num = 0;
-        Counter.sum = 0;
-        Counter.runSynchronized = true;
-        try {
-            long startTime = System.nanoTime();
-            Thread[] array = new Thread[THREADS];
-            for( int i = 0; i < THREADS; ++i ) {
-                array[i] = new Thread( new Counter() );
-                array[i].start();
+            // Synchronized threads.
+            try {
+                Counter.num = 0;
+                Counter.sum = 0;
+                int delagatedIterations = size / threads;
+                long startTime = System.nanoTime();
+                Thread[] array = new Thread[THREADS];
+                // Spawn each thread.
+                for ( int i = 0; i < threads; ++i ) {
+                    array[i] = new Thread( 
+                            new Counter( delagatedIterations, true )
+                        );
+                    array[i].start();
+                }
+                // Wait for each thread to finish.
+                for ( int i = 0; i < threads; ++i ) {
+                    array[i].join();
+                }
+                // Print out report.
+                System.out.println( "Multi Threaded, Synchronized-----------" );
+                System.out.println( "Seconds: " + ( 
+                        ( (double)(System.nanoTime() - startTime) ) / 1000000000
+                    ) );
+                System.out.println( "num: " + Counter.num );
+                System.out.println( "sum: " + Counter.sum );
+                System.out.println( "Threads: " + threads );
+                System.out.println( "Multi Threaded, Synchronized-----------" );
             }
-            for( int i = 0; i < THREADS; ++i ) {
-                array[i].join();
+            catch ( Exception e ) {
+                e.printStackTrace();
             }
-            System.out.println( "Seconds: " + ( (System.nanoTime() - startTime)) );
-            System.out.println( "num: " + Counter.num );
-            System.out.println( "sum: " + Counter.sum );
-            
         }
-        catch ( Exception e ) {
-        }
+    }
+    
+    /**
+     * A synchronized version of count().
+     */
+    static synchronized void countSynched() {
+        num = 1;
+        sum += num;
+    }
+    // END Static Section
+    
+    /** Indicates how the class should run. */
+    private boolean runSynchronized = false;
+    /** Indicates the number of iterations. */
+    private int limit;
+    
+    /**
+     * Initializes the class.
+     * 
+     * @param limit the number of iterations.
+     * @param runSynchronized indicates how the class should run.
+     */
+    public Counter( int limit, boolean runSynchronized ) {
+        this.limit = limit;
+        this.runSynchronized = runSynchronized;
+    }
+    
+    /**
+     * Perform one computation: (1)add one to num and then (2)add num into sum.
+     */
+    void count() {
+        this.num = 1;
+        this.sum += this.num;
     }
     
     /**
      * Called from run() to repeatedly call count().
      */
-    void go( int limit) {
-        //System.out.println( "Count" );
-        for( int i = 0; i < limit; ++i ) {
-            count();
+    void go( ) {
+        for ( int i = 0; i < this.limit; ++i ) {
+            this.count();
         }
     }
     
     /**
      * A synchronized version of go().
      */
-    synchronized void goSynched( int limit ) {
-        System.out.println( "goSynched" );
-        for( int i = 0; i < limit; ++i ) {
-            countSynched();
+    synchronized void goSynched( ) {
+        for ( int i = 0; i < this.limit; ++i ) {
+            this.countSynched();
         }
     }
     
@@ -130,14 +172,11 @@ public class Counter implements java.lang.Runnable {
      * Called by the Thread to begin computation.
      */
     public void run() {
-        //System.out.println( "Run" );
-        if ( !runSynchronized ) {
-            //System.out.println( "Not Synched" );
-            go( size );
+        if ( !this.runSynchronized ) {
+            this.go( );
         }
         else {
-            goSynched( size );
+            this.goSynched( );
         }
-        
     }
 }
