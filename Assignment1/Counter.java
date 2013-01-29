@@ -121,7 +121,7 @@ public class Counter implements java.lang.Runnable {
      * A synchronized version of count().
      */
     static synchronized void countSynched() {
-        num = 1;
+        ++num;
         sum += num;
     }
     // END Static Section
@@ -146,7 +146,7 @@ public class Counter implements java.lang.Runnable {
      * Perform one computation: (1)add one to num and then (2)add num into sum.
      */
     void count() {
-        this.num = 1;
+        ++this.num;
         this.sum += this.num;
     }
     
