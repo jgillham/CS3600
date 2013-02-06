@@ -64,8 +64,22 @@ public class BrokerImplementation implements Broker {
                     trading[ i ] += order[ i ];
                 }
             }
-        } catch ( StopThread e ) {
+            // Send inventory.
+            synchronized( this ) {
+                for ( --i ; i >= 0; --i ) {
+                    trading[ i ] -= order[ i ];
+                }
+            }
+        }
+        catch ( StopThread e ) {
             Project2.debug( IBM.metalName[ this.specialty ] + " - get() STOP THREAD" );
+            // Reclaim inventory.
+            synchronized( this ) {
+                for ( --i ; i >= 0; --i ) {
+                    trading[ i ] -= order[ i ];
+                    this.loadMetal( i, order[ i ] );
+                }
+            }
             //e.printStackTrace();
             throw new StopThread();
         }
@@ -75,30 +89,29 @@ public class BrokerImplementation implements Broker {
         //  previous iterations.
         catch ( InterruptedException e ) {
             Project2.debug( IBM.metalName[ this.specialty ] + " - get() INTERRUPTED" );
-            //e.printStackTrace();
-            throw new StopThread();
-        } catch ( Throwable e ) {
-            Project2.debug( IBM.metalName[ this.specialty ] + " - get() THROWABLE" );
-            //e.printStackTrace();
-            throw new StopThread();
-        }
-        finally {
-            // Add back to inventory.
+            // Reclaim inventory.
             synchronized( this ) {
-                for ( --i ; i > 0; --i ) {
+                for ( --i ; i >= 0; --i ) {
                     trading[ i ] -= order[ i ];
                     this.loadMetal( i, order[ i ] );
                 }
             }
+            //e.printStackTrace();
+            throw new StopThread();
+        } catch ( Throwable e ) {
+            Project2.debug( IBM.metalName[ this.specialty ] + " - get() THROWABLE" );
+            // Reclaim inventory.
+            synchronized( this ) {
+                for ( --i ; i >= 0; --i ) {
+                    trading[ i ] -= order[ i ];
+                    this.loadMetal( i, order[ i ] );
+                }
+            }
+            //e.printStackTrace();
+            throw new StopThread();
         }
         for ( int l = 0; l < IBM.METALS; ++l ) {
             Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
-        }
-        // Delete traded metals.
-        synchronized( this ) {
-            for ( i = 0 ; i < IBM.METALS; ++i ) {
-                this.trading[ i ] -= order[ i ];
-            }
         }
         Project2.debug( IBM.metalName[ this.specialty ] + " - get() done" );
         //throw new UnsupportedOperationException();
