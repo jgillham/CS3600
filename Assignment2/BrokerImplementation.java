@@ -35,9 +35,12 @@ public class BrokerImplementation implements Broker {
      *  gold, platinum, and uranium desired.
      */
     public void get( int[] order) {
-        Project2.debug( IBM.metalName[ this.specialty ] + " - get() called" );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " - get() called" );
         for ( int l = 0; l < IBM.METALS; ++l ) {
-            Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+            Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                this.trading[ l ]) );
         }
         // Look for cases where inventory is too low
         //  and build up enough inventory.
@@ -65,16 +68,17 @@ public class BrokerImplementation implements Broker {
                 }
             }
             // Send inventory.
-            synchronized( this ) {
+            synchronized ( this ) {
                 for ( --i ; i >= 0; --i ) {
                     trading[ i ] -= order[ i ];
                 }
             }
         }
         catch ( StopThread e ) {
-            Project2.debug( IBM.metalName[ this.specialty ] + " - get() STOP THREAD" );
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - get() STOP THREAD" );
             // Reclaim inventory.
-            synchronized( this ) {
+            synchronized ( this ) {
                 for ( --i ; i >= 0; --i ) {
                     trading[ i ] -= order[ i ];
                     this.loadMetal( i, order[ i ] );
@@ -88,9 +92,10 @@ public class BrokerImplementation implements Broker {
         //  current iteration (i). Therefore, we restore inventory for
         //  previous iterations.
         catch ( InterruptedException e ) {
-            Project2.debug( IBM.metalName[ this.specialty ] + " - get() INTERRUPTED" );
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - get() INTERRUPTED" );
             // Reclaim inventory.
-            synchronized( this ) {
+            synchronized ( this ) {
                 for ( --i ; i >= 0; --i ) {
                     trading[ i ] -= order[ i ];
                     this.loadMetal( i, order[ i ] );
@@ -98,10 +103,12 @@ public class BrokerImplementation implements Broker {
             }
             //e.printStackTrace();
             throw new StopThread();
-        } catch ( Throwable e ) {
-            Project2.debug( IBM.metalName[ this.specialty ] + " - get() THROWABLE" );
+        }
+        catch ( Throwable e ) {
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - get() THROWABLE" );
             // Reclaim inventory.
-            synchronized( this ) {
+            synchronized ( this ) {
                 for ( --i ; i >= 0; --i ) {
                     trading[ i ] -= order[ i ];
                     this.loadMetal( i, order[ i ] );
@@ -111,9 +118,12 @@ public class BrokerImplementation implements Broker {
             throw new StopThread();
         }
         for ( int l = 0; l < IBM.METALS; ++l ) {
-            Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+            Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                this.trading[ l ]) );
         }
-        Project2.debug( IBM.metalName[ this.specialty ] + " - get() done" );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " - get() done" );
         //throw new UnsupportedOperationException();
     }
 
@@ -124,12 +134,16 @@ public class BrokerImplementation implements Broker {
      * @param ounces is a number of ounces.
      */
     synchronized public void deliver( int ounces ) {
-        Project2.debug( IBM.metalName[ this.specialty ] + " - deliver() called" );
-        Project2.debug( IBM.metalName[ this.specialty ] + " receiving " + ounces );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " - deliver() called" );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " receiving " + ounces );
         this.loadMetal( this.specialty, ounces );
-        Project2.debug( IBM.metalName[ this.specialty ] + " total " + this.inventory[ this.specialty ] );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " total " + this.inventory[ this.specialty ] );
         this.notifyAll();
-        Project2.debug( IBM.metalName[ this.specialty ] + " - deliver() done" );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " - deliver() done" );
     }
 
     /**
@@ -144,48 +158,59 @@ public class BrokerImplementation implements Broker {
      * @param ounces how many ounces to swap.
      */
     public void swap( int what, int ounces ) {
-        Project2.debug( IBM.metalName[ this.specialty ] + " - swap() called" );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " - swap() called" );
         for ( int l = 0; l < IBM.METALS; ++l ) {
-            Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+            Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                this.trading[ l ]) );
         }
-        assert( what == this.specialty );
+        assert ( what == this.specialty );
         try {
-            Project2.debug( IBM.metalName[ this.specialty ] + " - swap() called1" );
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - swap() called1" );
             // Continue to hold while waiting for more inventory
             //  from the refiner.
             synchronized ( this ) {
                 while ( !this.takeMetal( this.specialty, ounces ) ) {
                     this.wait();
-                    Project2.debug(IBM.metalName[ this.specialty ] + "swap done waiting");
+                    Project2.debug(IBM.metalName[ this.specialty ] + 
+                        "swap done waiting");
                 }
             }
-            Project2.debug( IBM.metalName[ this.specialty ] + " - swap() called2" );
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - swap() called2" );
             // Accept offering.
             this.loadMetal( what, ounces );
         }
         // The exception will occur in the wait() function.
         //  Therefore, no alteration to the inventory occured.
         catch ( InterruptedException e ) {
-            Project2.debug( IBM.metalName[ this.specialty ] + " - swap() STOP" );
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - swap() STOP" );
             throw new StopThread();
         }
         for ( int l = 0; l < IBM.METALS; ++l ) {
-            Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+            Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                this.trading[ l ]) );
         }
         Project2.debug( IBM.metalName[ this.specialty ] + " - swap() done" );
     }
 
     /**
-     * This method is used by Project2.main to audit the global state when the system
-     *  shuts down. The Broker should fill in result with the amount of each metal it has
-     *  on hand.
+     * This method is used by Project2.main to audit the global state when
+     *  the system shuts down. The Broker should fill in result with the 
+     *  amount of each metal it has on hand.
      *
      * @param result the amount of each metal it has
      *  on hand.
      */
     synchronized public void getAmountOnHand( int[] result ) {
         for ( int i = 0; i < IBM.METALS; ++i ) {
-            Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ i ] + ":" + (this.inventory[ i ] + this.trading[ i ]) );
+            Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                " has " + IBM.metalName[ i ] + ":" + (this.inventory[ i ] + 
+                this.trading[ i ]) );
             result[ i ] = this.inventory[ i ] + this.trading[ i ];
         }
     }
@@ -199,7 +224,6 @@ public class BrokerImplementation implements Broker {
      * @return TRUE if successful or FALSE otherwise.
      */
     synchronized public boolean takeMetal( int type, int amount ) {
-//        Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ type ] + ":" + this.inventory[ type ] );
         if ( inventory[ type ] < amount ) {
             return false;
         }
@@ -228,17 +252,23 @@ public class BrokerImplementation implements Broker {
      * @param totalAmount is the ounces needed.
      */
     public void getNonspecialtyResource( int what, int totalAmount ) {
-        Project2.debug( IBM.metalName[ this.specialty ] + " - getNonspecialtyResource() called" );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " - getNonspecialtyResource() called" );
         for ( int l = 0; l < IBM.METALS; ++l ) {
-            Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+            Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                " has " + 
+                IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                this.trading[ l ]) );
         }
-        assert( what != this.specialty );
+        assert ( what != this.specialty );
         // Take the inventory and get the amount needed if any.
         int amountNeeded = totalAmount - this.inventory[ what ];
-        Project2.debug( IBM.metalName[ this.specialty ] + " - getNonspecialtyResource() amountNeeded: " + amountNeeded );
+        Project2.debug( IBM.metalName[ this.specialty ] + 
+            " - getNonspecialtyResource() amountNeeded: " + amountNeeded );
         // Peform a swap if necessary.
         if ( amountNeeded > 0 ) {
-            Project2.debug( IBM.metalName[ this.specialty ] + " - getNonspecialtyResource() amountNeeded:! " );
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - getNonspecialtyResource() amountNeeded:! " );
             try {
                 // Take the amount we need for the swap.
                 synchronized ( this ) {
@@ -254,19 +284,26 @@ public class BrokerImplementation implements Broker {
                 throw new StopThread();
             }
             for ( int l = 0; l < IBM.METALS; ++l ) {
-                Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+                Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                    " has " + 
+                    IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                    this.trading[ l ]) );
             }
-            Project2.debug( IBM.metalName[ this.specialty ] + " - getNonspecialtyResource() amountNeeded:& " );
+            Project2.debug( IBM.metalName[ this.specialty ] + 
+                " - getNonspecialtyResource() amountNeeded:& " );
             try {
                 // Get the metals from the specialist.
                 Project2.specialist( what ).swap(
                     this.specialty, amountNeeded
                 );
                 for ( int l = 0; l < IBM.METALS; ++l ) {
-                    Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+                    Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                        " has " + 
+                        IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                        this.trading[ l ]) );
                 }
                 // Swap is complete. Load received metals.
-                synchronized( this ) {
+                synchronized ( this ) {
                     this.loadMetal( what, amountNeeded );
                 }
 
@@ -274,23 +311,28 @@ public class BrokerImplementation implements Broker {
             // The exception will occur in the swap() function.
             //  In that case, restore metals that were taken.
             catch ( StopThread e ) {
-                Project2.debug( IBM.metalName[ this.specialty ] + " - getNonspecialtyResource() STOPTHREAD" );
+                Project2.debug( IBM.metalName[ this.specialty ] + 
+                    " - getNonspecialtyResource() STOPTHREAD" );
                 // Restore specialty offered, but, not used.
                 this.loadMetal( this.specialty, amountNeeded );
                 throw new StopThread();
             }
             finally {
                 Project2.debug( "finally" );
-                synchronized( this ) {
+                synchronized ( this ) {
                     this.trading[ this.specialty ] -= amountNeeded;
                 }
                 for ( int l = 0; l < IBM.METALS; ++l ) {
-                    Project2.debug( "At " + IBM.metalName[ this.specialty ] + " has " + IBM.metalName[ l ] + ":" + (this.inventory[ l ] +this.trading[ l ]) );
+                    Project2.debug( "At " + IBM.metalName[ this.specialty ] + 
+                        " has " + 
+                        IBM.metalName[ l ] + ":" + (this.inventory[ l ] + 
+                        this.trading[ l ]) );
                 }
             }
 
         }
 
-        Project2.debug( IBM.metalName[ this.specialty ] + " - getNonspecialtyResource() done" );
+        Project2.debug( IBM.metalName[ this.specialty ] +
+            " - getNonspecialtyResource() done" );
     }
 }
