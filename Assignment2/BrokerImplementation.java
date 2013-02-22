@@ -29,13 +29,18 @@ public class BrokerImplementation implements Broker {
      * A consumer calls this method to place an order. It should return only
      *  when the order has been filled.
      *
+     * Post Conditions:
+     *  -Subtracts the order from inventory.
+     *  -May ask other brokers to trade.
+     *
      * @param order a three-element array indicating the number of ounces of
      *  gold, platinum, and uranium desired.
      */
     public void get( int[] order) {
-        // Go through each metal in the order and move the needed inventory
-        //  into the private cache (called trading). The cache protects our
-        //  order from being used.
+        /* Go through each metal in the order and move the needed inventory
+         *  into the private cache (called trading). The cache protects our
+         *  order from being used.
+         */
         int required = 0;
         int i = 0;
         boolean threadInterrupted = false;
@@ -51,7 +56,7 @@ public class BrokerImplementation implements Broker {
                         }
                     }
                     // Get the resources from inventory and, if the inventory
-                    //  is running, low swap with the specialist.
+                    //  is running low, swap with the specialist.
                     else {
                         this.getNonspecialtyResource( i, order[ i ] );
                     }
@@ -61,29 +66,32 @@ public class BrokerImplementation implements Broker {
                 }
             }
         }
-        // This will occur when getNonspecialtyResource() is interrupted while
-        //  waiting to fill an order. This is usually because Project2 is wanting
-        //  to end the program. In this case, no inventory has been altered for the
-        //  current iteration (i). Therefore, we restore inventory for previous 
-        //  iterations.
+        /* This will occur when getNonspecialtyResource() is interrupted while
+         *  waiting to fill an order. This is usually because Project2 is 
+         *  wanting to end the program. In this case, no inventory has been 
+         *  altered for the current iteration (i). Therefore, we restore 
+         *  inventory for previous iterations.
+         */
         catch ( StopThread e ) {
             threadInterrupted = true;
             throw new StopThread();
         }
-        // The exception will occur in the wait() or getNonspecialtyResource()
-        //  functions. This is usually because Project2 is wanting to end the 
-        //  program. 
+        /* The exception will occur in the wait() or getNonspecialtyResource()
+         *  functions. This is usually because Project2 is wanting to end the 
+         *  program. 
+         */
         catch ( InterruptedException e ) {
             threadInterrupted = true;
             throw new StopThread();
         }
-        // In the case of a thread interruption, the program needs to transfer 
-        //  inventory from the cache (called trading) back to the main store. In 
-        //  the case of not being interruped, the program needs only to deduct 
-        //  the inventory from the cache.
-        //
-        // No inventory has been altered for the current iteration (i). Therefore,
-        //  the program only looks at previous iterations.
+        /* In the case of a thread interruption, the program needs to transfer 
+         *  inventory from the cache (called trading) back to the main store. In
+         *  the case of not being interruped, the program needs only to deduct 
+         *  the inventory from the cache.
+         *
+         * No inventory has been altered for the current iteration (i). 
+         *  Therefore, the program only looks at previous iterations.
+         */
         finally {
             synchronized ( this ) {
                 for ( --i ; i >= 0; --i ) {
@@ -100,6 +108,9 @@ public class BrokerImplementation implements Broker {
      * The refiner calls this method to deliver a load of metal to the broker.
      *  The metal is the one this broker supplies.
      *
+     * Post Conditions:
+     *  -Adds the ounces into the inventory.
+     *
      * @param ounces is a number of ounces.
      */
     synchronized public void deliver( int ounces ) {
@@ -111,8 +122,11 @@ public class BrokerImplementation implements Broker {
      * Another broker calls this method to swap one metal
      *  for another.
      *
-     * Post Condition:
+     * Preconditions:
      *  -Assumes the swap requests the metal specialty.
+     *
+     * Post Conditions:
+     *  -Changes the value of inventory.
      *
      * @param what indicates one of the metals; the other one is the
      *  metal in which this broker specializes.
@@ -156,6 +170,9 @@ public class BrokerImplementation implements Broker {
     /**
      * Takes the metal from the inventory. Returns success status.
      *
+     * Post Conditions:
+     * -may change the value of inventory.
+     *
      * @param type is the metal type.
      * @param amount is how much metal to take.
      *
@@ -172,6 +189,9 @@ public class BrokerImplementation implements Broker {
     /**
      * Loads a metal onto the inventory.
      *
+     * Post Conditions:
+     * -Changes the value of inventory.
+     *
      * @param type is the type of metal.
      * @param amount is the number of ounces.
      */
@@ -183,8 +203,8 @@ public class BrokerImplementation implements Broker {
      * Gets the needed resources in a trade with the specialist. Does
      *  not return until successful.
      *
-     * Conditions:
-     * -Should not be interrupted with an exception.
+     * Post Conditions:
+     * -may change the value of trading and inventory.
      *
      * @param what is the type of resource.
      * @param totalAmount is the ounces needed.
