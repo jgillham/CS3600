@@ -1,0 +1,15 @@
+Comment algorithms
+Find algorithm goal
+Find algorithm design pattern
+Predict algorithm behavior
+Find the best scenario for each algorithm
+
+Scientific Method:
+1. Observer
+2. Guess Why (Hypothesis)
+3. Predict
+4. Experiment
+
+Use the scientific method to solve the objectives (above).
+
+Measure the effectiveness of the refiner at meeting demand.
