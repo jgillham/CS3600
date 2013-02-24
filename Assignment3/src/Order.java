@@ -68,9 +68,11 @@ public class Order {
         int result = 0;
         for (int i = 0; i < request.length; i++) {
             int amt = request[i] - alloc[i];
+            //j Don't go negative.
             if (amt > supply[i]) {
                 amt = supply[i];
             }
+            //j Don't go over the limit.
             if (limit > 0 && amt > limit) {
                 amt = limit;
             }

@@ -81,9 +81,11 @@ public class Broker implements Runnable, IBM {
     public boolean get(int id, int[] amt) {
         Resources.debug("get " + Resources.requestToString(amt));
         Order o = enqueue(id, amt);
+        //j Null when shutting down.
         if (o == null) {
             return false;
         }
+        //j Finalize the order after it has been filled.
         boolean ok = o.waitFor();
         if (ok) {
             recordFulfillment(amt);
@@ -112,6 +114,7 @@ public class Broker implements Runnable, IBM {
             notify();
             return null;
         }
+        //j Make a new order and add it to the waiting list.
         Order o = new Order(id, amt);
         waiters.add(o);
         notify();
@@ -173,16 +176,22 @@ public class Broker implements Runnable, IBM {
     } // run
 
     /** Tries to satisfy and release one or more consumers.
-     * Uses algorithm 1.
      * Should be called whenever conditions change.  Only called from
      * synchronized methods.
+     *
+     * Looks at the first order and tries to satisfy it. Each order satisfied is
+     *  finished and removed from the list. The algorithm continues until it 
+     *  cannot satisfy an order.
      */
     private void algorithm1() {		
         while (!waiters.isEmpty()) {
+            //j get the first order.
             Order o = (Order) waiters.get(0);
+            //j Failed to satisfy even one order.
             if (o.give(onHand, 0) == 0) {
                 return;
             }
+            //j Finalize order.
             if (o.satisfied()) {
                 waiters.remove(0);
                 o.complete();
@@ -194,6 +203,9 @@ public class Broker implements Runnable, IBM {
      * Uses algorithm 2.
      * Should be called whenever conditions change.  Only called from
      * synchronized methods.
+     *
+     * Goes through each order on the list starting with the first and giving
+     *  resources to each.
      */
     private void algorithm2() {
         int amt;
