@@ -67,8 +67,10 @@ public class Order {
     public synchronized int give(int[] supply, int limit) {
         int result = 0;
         for (int i = 0; i < request.length; i++) {
+            //j The difference approaches zero so we never worry about
+            //j  negative amt.
             int amt = request[i] - alloc[i];
-            //j Don't go negative.
+            //j Don't give more than existing supplies.
             if (amt > supply[i]) {
                 amt = supply[i];
             }

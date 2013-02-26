@@ -179,9 +179,15 @@ public class Broker implements Runnable, IBM {
      * Should be called whenever conditions change.  Only called from
      * synchronized methods.
      *
-     * Looks at the first order and tries to satisfy it. Each order satisfied is
-     *  finished and removed from the list. The algorithm continues until it 
-     *  cannot satisfy an order.
+     * Josh's Analysis:
+     * ABOUT
+     * Looks at the first order and tries to satisfy it. If it satisfies it then it is removed from the list. The algorithm repeats until it cannot give any metals to the first on the list. This algorithm resembles first-come-first-server in CPU process scheduling.
+     *
+     * WEAKNESSES
+     * This algorithm suffers from long wait times. In the event that there is order large than the rest, the other orders will pile behind (the convoy effect) while their wait times skyrocket. The end result is some very angry customers.
+     *
+     * STRENGTHS
+     * This algorithm can be easier to write and understand which could result in cheaper code maintainence. It works effectively when orders are close to the same size.
      */
     private void algorithm1() {		
         while (!waiters.isEmpty()) {
@@ -204,16 +210,38 @@ public class Broker implements Runnable, IBM {
      * Should be called whenever conditions change.  Only called from
      * synchronized methods.
      *
+     * Josh's Analysis:
+     * ABOUT
      * Goes through each order on the list starting with the first and giving
-     *  resources to each.
+     *  resources to each. It will give a maximum of 1 of each type of metal to 
+     *  each order. The algorithm continues until it cannot give anymore. This
+     *  algorithm best compares to round-robin scheduling where the CPU gives an
+     *  even time slice to each process and starts back at the beginning of the
+     *  list when it reaches the end.
+     *
+     * WEAKNESSES
+     * This algorithm suffers from a couple of weaknesses. First, if the limit 
+     *  (the 2nd argument for give) is too large, this algorithm will behave 
+     *  like any first-come-first-server algorithm. I don't believe the limit is
+     *  too small, though. Second, if the limit is too small, the CPU time to
+     *  distribute the metals could cause delays. I would never worry about this
+     *  on modern hardware as only thousands of customers could make a
+     *  difference. Third, there is no order priority so the broker could never give special treatment to his favorite customers. This could be import when there is a particular high paying customer.
+     *
+     * If the above weakness holds true, setting the limit too a slightly larger number could increase the performance. Next, ensure that higher priority customers be given a larger amount of metals.
+     *
      */
     private void algorithm2() {
         int amt;
+        //j Continue giving until giving is not possible.
         do {
             amt = 0;
+            //j Give to each order.
             for (Iterator i = waiters.iterator(); i.hasNext(); ) {
                 Order o = (Order) i.next();
+                //j Give returns the total amount given if any.
                 amt += o.give(onHand, 1);
+                //j Remove satisfied orders from the list.
                 if (o.satisfied()) {
                     i.remove();
                     o.complete();
@@ -226,6 +254,17 @@ public class Broker implements Runnable, IBM {
      * Uses algorithm 3.
      * Should be called whenever conditions change.  Only called from
      * synchronized methods.
+     *
+     * Josh's Analysis:
+     * ABOUT
+     * This algorithm appears to pick the smallest the order to serve. If the order is satisfied, the order is removed from the list, otherwise the algorithm repeats until there is no more metals to give. This algorithm most closely resembles shortest-order-first-scheduling.
+     *
+     * WEAKNESSES
+     * Starvation maybe possible in the case where a large order is received along with a continual stream of smaller orders
+     *
+     * STRENGTHS
+     * This algorithm reduces wait times.
+     * 
      */
     private void algorithm3() {	
         while (!waiters.isEmpty()) {
@@ -254,6 +293,10 @@ public class Broker implements Runnable, IBM {
      * Uses algorithm 4.
      * Should be called whenever conditions change.  Only called from
      * synchronized methods.
+     *
+     * Josh's analysis:
+     * ABOUT
+     * this algorithm is a variation of #3, but, instead we are comparing remainging metals on the order.
      */
     private void algorithm4() {
         while (!waiters.isEmpty()) {
