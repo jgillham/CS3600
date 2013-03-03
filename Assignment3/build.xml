@@ -44,27 +44,6 @@
             <arg value = "3"/>
             <arg value = "100"/>
         </java>
-        <java classname = "Project3" classpath = "${target}" 
-         failonerror = "true" >
-            <!-- Algorithm number -->
-            <arg value = "2"/>
-            <arg value = "3"/>
-            <arg value = "100"/>
-        </java>
-        <java classname = "Project3" classpath = "${target}" 
-         failonerror = "true" >
-            <!-- Algorithm number -->
-            <arg value = "3"/>
-            <arg value = "3"/>
-            <arg value = "100"/>
-        </java>
-        <java classname = "Project3" classpath = "${target}" 
-         failonerror = "true" >
-            <!-- Algorithm number -->
-            <arg value = "4"/>
-            <arg value = "3"/>
-            <arg value = "100"/>
-        </java>
     </target>
 
     <!-- We need test units. -->
