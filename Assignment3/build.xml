@@ -46,6 +46,13 @@
         </java>
     </target>
 
+    <!-- Run the program. -->
+    <target name = "alg1" depends = "build">
+        <java classname = "Alg1" classpath = "${target}" 
+         failonerror = "true" >
+        </java>
+    </target>
+
     <!-- We need test units. -->
     <target name = "testAll" depends = "build">
         <junit printsummary = "yes" haltonfailure = "true">
