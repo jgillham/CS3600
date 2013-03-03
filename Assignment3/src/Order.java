@@ -18,6 +18,10 @@ public class Order {
         file = new PrintWriter( new FileWriter( "results-Alg" + 
             String.valueOf( algorithm ) + "-" +
             fileDate.format( new Date( ) ) + ".csv" ) );
+        file.printf( "%s,%s,%s,%s,%s,%s,%s,%s\n", IBM.metalName[0],
+            IBM.metalName[1], IBM.metalName[2], "Arrival Time (Readable)",
+            "Arrival Time (milliseconds)", "Served Time (Readable)",
+            "Served Time (milliseconds)", "Turn Around Time" );
         if ( file == null ) {
             throw new java.lang.NullPointerException();
         }
@@ -153,9 +157,12 @@ public class Order {
         done = true;
         notify();
         this.served = new Date();
+        double arrival = this.arrival.getTime();
+        double served = this.served.getTime();
         SimpleDateFormat df = new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss" );
-        this.file.printf( "%d,%d,%d,%s,%d,%s,%d\n", alloc[0], alloc[1], alloc[2],
-            df.format( this.arrival ), this.arrival.getTime(),  df.format( this.served ), this.served.getTime() );
+        this.file.printf( "%d,%d,%d,%s,%f,%s,%f,%f\n", alloc[0], alloc[1], 
+            alloc[2], df.format( this.arrival ), arrival,  
+            df.format( this.served ), served, served - arrival );
         this.file.flush();
     } // complete()
 
