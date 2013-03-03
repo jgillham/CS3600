@@ -151,7 +151,7 @@ public class Order {
             this.file.printf( "%d,%d,%d,%s,%f,%s,%f,%f\n", alloc[0], alloc[1], 
                 alloc[2], df.format( this.arrival ), arrival,  
                 df.format( this.served ), served, served - arrival );
-            this.file.flush();
+            //this.file.flush();
         }
     } // complete()
 

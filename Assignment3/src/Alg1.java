@@ -8,6 +8,8 @@ public class Alg1 {
     public static void main(String[] args) {
         DescendingOrders();
         AscendingOrders();
+        Order.file.close();
+        Consumer.file.close();
     }
     static public void AscendingOrders() {
         try {
