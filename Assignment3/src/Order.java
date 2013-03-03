@@ -1,9 +1,28 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
 /**
  * A partially-filled order for metals.  It keeps track of the amounts
  * requested and granted and serves as a waiting place for the ordering thread
  * to wait for the order to be completely filled.
  */
 public class Order {
+    // BEGIN Static
+    static private PrintWriter file = null;
+    static public void createFile( int algorithm ) throws java.io.IOException {
+        SimpleDateFormat fileDate = new SimpleDateFormat( 
+            "MM-dd-yyyy_HH-mm-ss" );
+        file = new PrintWriter( new FileWriter( "results-Alg" + 
+            String.valueOf( algorithm ) + "-" +
+            fileDate.format( new Date( ) ) + ".csv" ) );
+        if ( file == null ) {
+            throw new java.lang.NullPointerException();
+        }
+    }
+    // END Static
     /** Source of sequence numbers. */
     private static int nextSeq = 0;
 
@@ -17,7 +36,7 @@ public class Order {
     public final int seq;
 
     /** The amount allocated thus far. */
-    private int[] alloc;
+    public int[] alloc;
 
     /** Indication that this request has been released by calling release(). */
     private boolean done = false;
@@ -26,6 +45,12 @@ public class Order {
      * the request was refused (because the system is shutting down).
      */
     private boolean result;
+
+    /** Holds the time and date of arrival. */
+    public Date arrival = new Date();
+    /** Holds the time and date that the order was completed. */
+    public Date served = null;
+
 
     /** Creates a new Order.
      * Note:  This method is not thread-safe because it access the static field
@@ -127,6 +152,11 @@ public class Order {
         result = true;
         done = true;
         notify();
+        this.served = new Date();
+        SimpleDateFormat df = new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss" );
+        this.file.printf( "%d,%d,%d,%s,%d,%s,%d\n", alloc[0], alloc[1], alloc[2],
+            df.format( this.arrival ), this.arrival.getTime(),  df.format( this.served ), this.served.getTime() );
+        this.file.flush();
     } // complete()
 
     /** Rejects this Order.  All resources previously granted to this Order

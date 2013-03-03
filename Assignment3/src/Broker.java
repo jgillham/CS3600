@@ -56,6 +56,7 @@ public class Broker implements Runnable, IBM {
             throw new IllegalArgumentException(
                 "Algorithm must be in the range 1.." + NUM_ALGORITHMS);
         }
+        Order.createFile( algorithm );
         this.algorithm = algorithm;
         this.iterations = iterations;
     } // Broker(int)
@@ -194,7 +195,12 @@ public class Broker implements Runnable, IBM {
      * STRENGTHS
      * This algorithm can be easier to write and understand which could result 
      *  in cheaper code maintainence. It works effectively when orders are 
-     *  close to the same size.
+     *  close to the same size. Impossible to have head dead lock due to no 
+     *  priorities.
+     *
+     * TESTING
+     * Prove that first come first served. Does it leave before its completed?
+     *  Prove that other orders are served first.
      */
     private void algorithm1() {		
         while (!waiters.isEmpty()) {
