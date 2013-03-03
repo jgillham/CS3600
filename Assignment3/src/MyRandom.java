@@ -1,16 +1,23 @@
 import java.util.Random;
 
 class MyRandom extends Random {
-    private int orderNum = 0;
-    private int K = 2;
+    static public int MAX = 60;
+    static public int MIN = 4;
+    static public int AMOUNT = 60; 
+    static public int K = -2;
+
+    private int amount;
+    public void MyRandom() {
+        this.amount = AMOUNT;
+    }
     public void newOrder() {
-        ++this.orderNum;
-        if ( this.K < 25 ) {
-            this.K *= 2;
+        int newAmt = this.amount + this.K; 
+        if ( newAmt >= MIN && newAmt <= MAX ) {
+            this.amount = newAmt;
         }
     }
     public int nextInt( int id, int metal, int max ) {
-       return this.K;
+       return this.amount;
        //* super.nextInt( max ); 
     }
 }
