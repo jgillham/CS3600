@@ -5,11 +5,14 @@ import java.text.DecimalFormat;
  * A consumer of metals.
  */
 public class Consumer implements Runnable, IBM {
+    static public java.io.PrintWriter file = null;
+
     /** Id of this consumer */
     private int id;
 
     /** The broker to get metals from. */
     private Broker broker;
+
 
     // Parameters that determine the behavior of this consumer.
 
@@ -85,6 +88,11 @@ public class Consumer implements Runnable, IBM {
             + "\n   Completed purchases:    " + numberOfPurchases
             + "\n   Total waiting time(ms): " + totalServiceTime
             + "\n   Average waiting time:   " + avg);
+        if ( file != null ) {
+            file.printf( "%d,%d,%d,%d,%s\n", id, (consumed[0] + consumed[1] + 
+                consumed[2]), numberOfPurchases, totalServiceTime, avg );
+            file.flush();
+        }
     } // printReport()
 
     /** Main loop.
