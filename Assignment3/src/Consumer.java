@@ -33,7 +33,7 @@ public class Consumer implements Runnable, IBM {
     // Misc fields
 
     /** A source of random numbers. */
-    private Random rand;
+    private MyRandom rand;
 
     /** A format for printing fractions to two decimal places. */
     private static DecimalFormat fmt = new DecimalFormat("0.00");
@@ -52,7 +52,7 @@ public class Consumer implements Runnable, IBM {
         //    rand = new Random()
         // you will get a different sequence of random numbers each time you
         // run the program.
-        rand = new Random(id * 100);
+        rand = new MyRandom( );
 
         // Set values of various simulation parameters.  See also the
         // Supplier constructor.
@@ -106,10 +106,11 @@ public class Consumer implements Runnable, IBM {
             // non-zero.
             int[] order = new int[METALS];
             int sum;
+            rand.newOrder();
             do {
                 sum = 0;
                 for (int i = 0; i < order.length; i++) {
-                    order[i] = rand.nextInt(maxPurchase[i] + 1);
+                    order[i] = rand.nextInt( this.id, i, maxPurchase[i] + 1);
                     sum += order[i];
                 }
             } while (sum == 0);
