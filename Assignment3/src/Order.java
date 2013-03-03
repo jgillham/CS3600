@@ -11,21 +11,7 @@ import java.io.PrintWriter;
  */
 public class Order {
     // BEGIN Static
-    static private PrintWriter file = null;
-    static public void createFile( int algorithm ) throws java.io.IOException {
-        SimpleDateFormat fileDate = new SimpleDateFormat( 
-            "MM-dd-yyyy_HH-mm-ss" );
-        file = new PrintWriter( new FileWriter( "results-Alg" + 
-            String.valueOf( algorithm ) + "-" +
-            fileDate.format( new Date( ) ) + ".csv" ) );
-        file.printf( "%s,%s,%s,%s,%s,%s,%s,%s\n", IBM.metalName[0],
-            IBM.metalName[1], IBM.metalName[2], "Arrival Time (Readable)",
-            "Arrival Time (milliseconds)", "Served Time (Readable)",
-            "Served Time (milliseconds)", "Turn Around Time" );
-        if ( file == null ) {
-            throw new java.lang.NullPointerException();
-        }
-    }
+    static public PrintWriter file = null;
     // END Static
     /** Source of sequence numbers. */
     private static int nextSeq = 0;
@@ -159,11 +145,14 @@ public class Order {
         this.served = new Date();
         double arrival = this.arrival.getTime();
         double served = this.served.getTime();
-        SimpleDateFormat df = new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss" );
-        this.file.printf( "%d,%d,%d,%s,%f,%s,%f,%f\n", alloc[0], alloc[1], 
-            alloc[2], df.format( this.arrival ), arrival,  
-            df.format( this.served ), served, served - arrival );
-        this.file.flush();
+        if ( file != null ) {
+            SimpleDateFormat df = 
+                new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss" );
+            this.file.printf( "%d,%d,%d,%s,%f,%s,%f,%f\n", alloc[0], alloc[1], 
+                alloc[2], df.format( this.arrival ), arrival,  
+                df.format( this.served ), served, served - arrival );
+            this.file.flush();
+        }
     } // complete()
 
     /** Rejects this Order.  All resources previously granted to this Order

@@ -51,12 +51,11 @@ public class Broker implements Runnable, IBM {
     /** Creates a new Broker.
      * @param algorithm the algorithm used to choose among requests.
      */
-    public Broker(int algorithm) throws java.io.IOException {
+    public Broker(int algorithm) {
         if (algorithm < 1 || algorithm > NUM_ALGORITHMS) {
             throw new IllegalArgumentException(
                 "Algorithm must be in the range 1.." + NUM_ALGORITHMS);
         }
-        Order.createFile( algorithm );
         this.algorithm = algorithm;
         this.iterations = iterations;
     } // Broker(int)
