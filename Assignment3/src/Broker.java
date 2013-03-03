@@ -181,13 +181,20 @@ public class Broker implements Runnable, IBM {
      *
      * Josh's Analysis:
      * ABOUT
-     * Looks at the first order and tries to satisfy it. If it satisfies it then it is removed from the list. The algorithm repeats until it cannot give any metals to the first on the list. This algorithm resembles first-come-first-server in CPU process scheduling.
+     * Looks at the first order and tries to satisfy it. If the order is 
+     *  satisfied then it is removed from the list. The algorithm repeats until 
+     *  it cannot give any metals to the next on the list. This algorithm 
+     *  resembles first-come-first-server in CPU process scheduling.
      *
      * WEAKNESSES
-     * This algorithm suffers from long wait times. In the event that there is order large than the rest, the other orders will pile behind (the convoy effect) while their wait times skyrocket. The end result is some very angry customers.
+     * This algorithm suffers from long wait times. A larger order will cause 
+     *  subsequent orders to pile behind (the convoy effect) while their wait 
+     *  times skyrocket resulting in some very angry customers.
      *
      * STRENGTHS
-     * This algorithm can be easier to write and understand which could result in cheaper code maintainence. It works effectively when orders are close to the same size.
+     * This algorithm can be easier to write and understand which could result 
+     *  in cheaper code maintainence. It works effectively when orders are 
+     *  close to the same size.
      */
     private void algorithm1() {		
         while (!waiters.isEmpty()) {
@@ -212,24 +219,27 @@ public class Broker implements Runnable, IBM {
      *
      * Josh's Analysis:
      * ABOUT
-     * Goes through each order on the list starting with the first and giving
-     *  resources to each. It will give a maximum of 1 of each type of metal to 
-     *  each order. The algorithm continues until it cannot give anymore. This
-     *  algorithm best compares to round-robin scheduling where the CPU gives an
-     *  even time slice to each process and starts back at the beginning of the
+     * Gives a maximum of 1 of each type of metal to each order starting with 
+     *  the first and continues while it can give to at least 1 order. This 
+     *  algorithm best compares to round-robin scheduling where the CPU gives an     *  even time slice to each process and starts back at the beginning of the 
      *  list when it reaches the end.
      *
      * WEAKNESSES
      * This algorithm suffers from a couple of weaknesses. First, if the limit 
      *  (the 2nd argument for give) is too large, this algorithm will behave 
      *  like any first-come-first-server algorithm. I don't believe the limit is
-     *  too small, though. Second, if the limit is too small, the CPU time to
+     *  too large, though. Second, if the limit is too small, the CPU time to
      *  distribute the metals could cause delays. I would never worry about this
-     *  on modern hardware as only thousands of customers could make a
-     *  difference. Third, there is no order priority so the broker could never give special treatment to his favorite customers. This could be import when there is a particular high paying customer.
+     *  on modern hardware as only more than thousands of customers could make a
+     *  difference. Third, there is no order priority so the broker could never 
+     *  give special treatment to his favorite (or high paying) customers. 
      *
-     * If the above weakness holds true, setting the limit too a slightly larger number could increase the performance. Next, ensure that higher priority customers be given a larger amount of metals.
+     * Setting the limit slightly higher could increase the performance. Also, 
+     *  ensure that higher priority customers be given a larger amount of 
+     *  metals.
      *
+     * STRENGTHS
+     * Starvation is prevented. In most cases, wait times are kept low.
      */
     private void algorithm2() {
         int amt;
@@ -257,13 +267,21 @@ public class Broker implements Runnable, IBM {
      *
      * Josh's Analysis:
      * ABOUT
-     * This algorithm appears to pick the smallest the order to serve. If the order is satisfied, the order is removed from the list, otherwise the algorithm repeats until there is no more metals to give. This algorithm most closely resembles shortest-order-first-scheduling.
+     * This algorithm appears to tries to satisfy the smallest order on the list
+     *  and repeats while it gives any of its metals. This algorithm most 
+     *  closely resembles shortest-order-first-scheduling.
      *
      * WEAKNESSES
-     * Starvation maybe possible in the case where a large order is received along with a continual stream of smaller orders
+     * Starvation maybe possible in the case where a large order is received 
+     *  along with a continual stream of smaller orders. Also, wait times may
+     *  be less than optimal for a pair of orders with the majority of their 
+     *  orders not on the same metal. For example, lets say the an order wants
+     *  4 gold and 3 platinum and another order wants 5 platinum and a 3 gold. 
+     *  If the on hand metals are 3 gold and 5 platinum then server the first 
+     *  order will result in higher wait times.
      *
      * STRENGTHS
-     * This algorithm reduces wait times.
+     * In most cases, this algorithm reduces wait times.
      * 
      */
     private void algorithm3() {	
@@ -296,11 +314,20 @@ public class Broker implements Runnable, IBM {
      *
      * Josh's analysis:
      * ABOUT
-     * this algorithm is a variation of #3, but, instead we are comparing remainging metals on the order.
+     * This algorithm is a variation of #3, but, instead we are comparing 
+     *  remainging metals on the order. I can't imagine the behavior differing 
+     *  from #3. This algorithm is similar to shortest-order-first-scheduling.
+     *
+     * WEAKNESSES
+     * Similar to #3.
+     *
+     * STRENGTHS
+     * Similar to #3.
      */
     private void algorithm4() {
         while (!waiters.isEmpty()) {
             Order o;
+            //j Get the order with the fewest remaining.
             int min = Integer.MAX_VALUE;
             int mini = -1;
             for (int i = 0; i < waiters.size(); i++) {
@@ -311,9 +338,11 @@ public class Broker implements Runnable, IBM {
                 }
             }
             o = (Order) waiters.get(mini);
+            //j Finish when nothing was given.
             if (o.give(onHand, 0) == 0) {
                 return;
             }
+            //j Remove satisfied orders.
             if (o.satisfied()) {
                 waiters.remove(mini);
                 o.complete();

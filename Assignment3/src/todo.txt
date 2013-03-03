@@ -1,0 +1,5 @@
+Algorithm analysis:
+-How does it work?
+-How could it be ineffecient?
+-Under what case will it perform optimally?
+-Under what cases could it fail?
