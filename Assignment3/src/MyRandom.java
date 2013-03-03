@@ -1,12 +1,12 @@
 import java.util.Random;
 
 class MyRandom extends Random {
-    static public int MAX = 60;
+    static public int MAX = 100;
     static public int MIN = 4;
-    static public int AMOUNT = 60; 
-    static public int K = -2;
+    static public int AMOUNT = 50; 
+    static public int K = -10;
 
-    private int amount;
+    private int amount ;
     public void MyRandom() {
         this.amount = AMOUNT;
     }

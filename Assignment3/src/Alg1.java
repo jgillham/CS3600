@@ -7,19 +7,16 @@ import java.io.PrintWriter;
 public class Alg1 {
     public static void main(String[] args) {
         DescendingOrders();
+        AscendingOrders();
     }
     static public void AscendingOrders() {
         try {
-            MyRandom.MAX = 60;
-            MyRandom.MIN = 4;
-            MyRandom.AMOUNT = 4;
-            MyRandom.K = 10;
             SimpleDateFormat fileDate = new SimpleDateFormat(
                 "MM-dd-yyyy_HH-mm-ss" );
-            Order.file = new PrintWriter( new FileWriter( "Alg1-orders" +
+            Order.file = new PrintWriter( new FileWriter( "Alg1-testA-orders" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file = new PrintWriter( 
-                new FileWriter( "Alg1-consumers-" +
+                new FileWriter( "Alg1-testA-consumers-" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file.printf( "%s,%s,%s,%s,%s\n", 
                 "Consumer",
@@ -32,7 +29,7 @@ public class Alg1 {
                     "Arrival Time (Readable)",
                     "Arrival Time (milliseconds)", "Served Time (Readable)",
                     "Served Time (milliseconds)", "Turn Around Time" );
-                Project3.main( new String[]{ "1", "3", "1000" } );
+                Project3.main( new String[]{ "1", "3", "300" } );
             }
         }
         catch ( Exception e ) {
@@ -41,16 +38,12 @@ public class Alg1 {
     }
     static public void DescendingOrders() {
         try {
-            MyRandom.MAX = 60;
-            MyRandom.MIN = 4;
-            MyRandom.AMOUNT = 60;
-            MyRandom.K = -10;
             SimpleDateFormat fileDate = new SimpleDateFormat(
                 "MM-dd-yyyy_HH-mm-ss" );
-            Order.file = new PrintWriter( new FileWriter( "Alg1-orders" +
+            Order.file = new PrintWriter( new FileWriter( "Alg1-testD-orders" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file = new PrintWriter( 
-                new FileWriter( "Alg1-consumers-" +
+                new FileWriter( "Alg1-testD-consumers-" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file.printf( "%s,%s,%s,%s,%s\n", 
                 "Consumer",
@@ -63,7 +56,7 @@ public class Alg1 {
                     "Arrival Time (Readable)",
                     "Arrival Time (milliseconds)", "Served Time (Readable)",
                     "Served Time (milliseconds)", "Turn Around Time" );
-                Project3.main( new String[]{ "1", "3", "10" } );
+                Project3.main( new String[]{ "1", "3", "300" } );
             }
         }
         catch ( Exception e ) {
