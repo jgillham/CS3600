@@ -13,6 +13,7 @@ public class Alg1 {
     }
     static public void AscendingOrders() {
         try {
+            MyRandom.K = 5;
             SimpleDateFormat fileDate = new SimpleDateFormat(
                 "MM-dd-yyyy_HH-mm-ss" );
             Order.file = new PrintWriter( new FileWriter( "results/Alg1-testA-orders" +
@@ -40,6 +41,7 @@ public class Alg1 {
     }
     static public void DescendingOrders() {
         try {
+            MyRandom.K = -5;
             SimpleDateFormat fileDate = new SimpleDateFormat(
                 "MM-dd-yyyy_HH-mm-ss" );
             Order.file = new PrintWriter( new FileWriter( "Alg1-testD-orders" +

@@ -3,7 +3,7 @@ import java.util.Random;
 class MyRandom extends Random {
     static public int MAX = 100;
     static public int MIN = 4;
-    static public int K = -10;
+    static public int K = -5;
 
     private int amount = 50;
     public void newOrder() {
@@ -13,7 +13,6 @@ class MyRandom extends Random {
         }
     }
     public int nextInt( int id, int metal, int max ) {
-       return this.amount;
-       //* super.nextInt( max ); 
+       return (int)((double)this.amount * (double)super.nextInt( max )/max); 
     }
 }
