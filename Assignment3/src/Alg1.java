@@ -44,10 +44,10 @@ public class Alg1 {
             MyRandom.K = -5;
             SimpleDateFormat fileDate = new SimpleDateFormat(
                 "MM-dd-yyyy_HH-mm-ss" );
-            Order.file = new PrintWriter( new FileWriter( "Alg1-testD-orders" +
+            Order.file = new PrintWriter( new FileWriter( "results/Alg1-testD-orders" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file = new PrintWriter( 
-                new FileWriter( "Alg1-testD-consumers-" +
+                new FileWriter( "results/Alg1-testD-consumers-" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file.printf( "%s,%s,%s,%s,%s\n", 
                 "Consumer",
