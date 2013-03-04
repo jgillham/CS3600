@@ -2,3 +2,5 @@
 *.ctxt
 *.zip
 *.swp
+**/build
+*.ini
