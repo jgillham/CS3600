@@ -6,10 +6,14 @@ import java.io.PrintWriter;
 
 public class Alg1 {
     public static void main(String[] args) {
-        DescendingOrders();
-        AscendingOrders();
-        Order.file.close();
-        Consumer.file.close();
+        try{
+            DescendingOrders();
+            AscendingOrders();
+        }
+        finally {
+            Order.file.close();
+            Consumer.file.close();
+        }
     }
     static public void AscendingOrders() {
         try {
