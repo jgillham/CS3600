@@ -30,6 +30,7 @@
     <target name = "build">
         <mkdir dir = "${target.base}"/>
         <mkdir dir = "${target}"/>
+        <mkdir dir = "results"/>
         <javac srcdir = "${source}" destdir = "${target}" debug = "on"
          classpath = "${target}">
         </javac>

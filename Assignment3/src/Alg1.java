@@ -15,10 +15,10 @@ public class Alg1 {
         try {
             SimpleDateFormat fileDate = new SimpleDateFormat(
                 "MM-dd-yyyy_HH-mm-ss" );
-            Order.file = new PrintWriter( new FileWriter( "Alg1-testA-orders" +
+            Order.file = new PrintWriter( new FileWriter( "results/Alg1-testA-orders" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file = new PrintWriter( 
-                new FileWriter( "Alg1-testA-consumers-" +
+                new FileWriter( "results/Alg1-testA-consumers-" +
                 fileDate.format( new Date( ) ) + ".csv" ) );
             Consumer.file.printf( "%s,%s,%s,%s,%s\n", 
                 "Consumer",
