@@ -255,7 +255,7 @@ public class Broker implements Runnable, IBM {
             for (Iterator i = waiters.iterator(); i.hasNext(); ) {
                 Order o = (Order) i.next();
                 //j Give returns the total amount given if any.
-                amt += o.give(onHand, 1);
+                amt += o.give(onHand, Project3.quantum);
                 //j Remove satisfied orders from the list.
                 if (o.satisfied()) {
                     i.remove();

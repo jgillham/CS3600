@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 public class Order {
     // BEGIN Static
     static public PrintWriter file = null;
+    static public PrintWriter cancelledFile = null;
     // END Static
     /** Source of sequence numbers. */
     private static int nextSeq = 0;
@@ -37,9 +38,11 @@ public class Order {
     private boolean result;
 
     /** Holds the time and date of arrival. */
-    public Date arrival = new Date();
+    public int arrival = Project3.time();
     /** Holds the time and date that the order was completed. */
-    public Date served = null;
+    public int served = -1;
+    /** Holds the time and date when the first resources were given. */
+    public int firstGive = -1;
 
 
     /** Creates a new Order.
@@ -97,6 +100,9 @@ public class Order {
             supply[i] -= amt;
             result += amt;
         }
+        if ( result > 0 && this.firstGive == -1  ) {
+            this.firstGive = Project3.time();
+        }
         return result;
     } // give(int[],int)
 
@@ -142,16 +148,28 @@ public class Order {
         result = true;
         done = true;
         notify();
-        this.served = new Date();
-        double arrival = this.arrival.getTime();
-        double served = this.served.getTime();
+        this.served = Project3.time();
         if ( file != null ) {
-            SimpleDateFormat df = 
-                new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss" );
-            this.file.printf( "%d,%d,%d,%s,%f,%s,%f,%f\n", alloc[0], alloc[1], 
-                alloc[2], df.format( this.arrival ), arrival,  
-                df.format( this.served ), served, served - arrival );
-            //this.file.flush();
+            int total = this.alloc[0] +  this.alloc[1] + this.alloc[2];
+            if ( total / 3 < MyRandom.MAX - 3 &&
+                  total / 3 > MyRandom.MIN + 3 ) {
+                SimpleDateFormat df = 
+                    new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss" );
+                this.file.printf( "%d,%d,%d,"
+                        + "%d,"
+                        + "%d,%d,%d,"
+                        + "%d,%d,%d,"
+                        + "=IF(ISTEXT(I2);\"\";I2+K1),"
+                        + "=IF(ISTEXT(I2);\"\";L1+1),"
+                        + "=IF(ISTEXT(K2);\"\";K2/L2)\n",
+                        arrival, firstGive, served, 
+                        this.alloc[0], this.alloc[1], this.alloc[2], 
+                    total,
+                    (served - arrival),
+                    (firstGive - arrival),
+                    (served - firstGive));
+                //this.file.flush();
+            }
         }
     } // complete()
 
@@ -161,6 +179,24 @@ public class Order {
      * @param revoked the place to put the revoked resources.
      */
     public synchronized void cancel(int[] revoked) {
+        if ( cancelledFile != null ){
+            int total = this.alloc[0] +  this.alloc[1] + this.alloc[2];
+            SimpleDateFormat df = 
+                new SimpleDateFormat( "MM-dd-yyyy HH:mm:ss" );
+            this.file.printf( "%d,%d,%d,"
+                    + "%d,"
+                    + "%d,%d,%d,"
+                    + "%d,%d,%d,"
+                    + "=IF(ISTEXT(I2);\"\";I2+K1),"
+                    + "=IF(ISTEXT(I2);\"\";L1+1),"
+                    + "=IF(ISTEXT(K2);\"\";K2/L2)\n",
+                    arrival, firstGive, served, 
+                    this.alloc[0], this.alloc[1], this.alloc[2], 
+                total,
+                (served - arrival),
+                (firstGive - arrival),
+                (served - firstGive));
+        }
         for (int i = 0; i < request.length; i++) {
             revoked[i] += alloc[i];
             alloc[i] = 0;

@@ -53,6 +53,27 @@
          failonerror = "true" >
         </java>
     </target>
+    
+    <!-- Run the program. -->
+    <target name = "alg2" depends = "build">
+        <java classname = "Alg2" classpath = "${target}" 
+         failonerror = "true" >
+        </java>
+    </target>
+    
+    <!-- Run the program. -->
+    <target name = "alg3" depends = "build">
+        <java classname = "Alg3" classpath = "${target}" 
+         failonerror = "true" >
+        </java>
+    </target>
+    
+    <!-- Run the program. -->
+    <target name = "alg4" depends = "build">
+        <java classname = "Alg4" classpath = "${target}" 
+         failonerror = "true" >
+        </java>
+    </target>
 
     <!-- We need test units. -->
     <target name = "testAll" depends = "build">

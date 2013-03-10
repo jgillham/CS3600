@@ -89,7 +89,8 @@ public class Consumer implements Runnable, IBM {
             + "\n   Total waiting time(ms): " + totalServiceTime
             + "\n   Average waiting time:   " + avg);
         if ( file != null ) {
-            file.printf( "%d,%d,%d,%d,%s\n", id, (consumed[0] + consumed[1] + 
+            file.printf( "%d,%d,%d,%d,%d,%s\n", Project3.quantum,
+                id, (consumed[0] + consumed[1] + 
                 consumed[2]), numberOfPurchases, totalServiceTime, avg );
             file.flush();
         }

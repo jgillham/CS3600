@@ -18,13 +18,15 @@ public class Project3 implements IBM {
     private static Refiner refiner;
 
     /** Startup time (used to support the time() method. */
-    static private long startTime = System.currentTimeMillis();
+    static public long startTime = System.currentTimeMillis();
 
     /** Flag to control debugging output. */
     private static boolean verbose = false;
 
     /** Number of consumers (from the command line). */
     private static int consumerCount;
+    /** Holds the quantum for algorithm 2. */
+    public static int quantum = 1;
 
     // Methods
 
@@ -108,13 +110,14 @@ public class Project3 implements IBM {
             case 'v': verbose = true; break;
             }
         }
-        if (options.optind != args.length - 3) {
+        if (options.optind != args.length - 4) {
             usage();
         }
 
         int algorithm = Integer.parseInt(args[options.optind+0]);
         consumerCount = Integer.parseInt(args[options.optind+1]);
         int iterations = Integer.parseInt(args[options.optind+2]);
+        quantum = Integer.parseInt(args[options.optind+3]);
 
         // Create the broker
         broker = new Broker(algorithm);
