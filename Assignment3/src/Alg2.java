@@ -2,9 +2,9 @@
 public class Alg2 extends AlgorithmRunner {
     public static void main(String[] args) {
         try{
-            QuantumizedOrders( 2, 1 );
-            QuantumizedOrders( 2, 2 );
-            QuantumizedOrders( 2, 3 );
+            for ( int i = 1; i < 11; ++i ) {
+                QuantumizedOrders( 2, i );
+            }
             QuantumizedOrders( 2, 100 );
         }
         finally {

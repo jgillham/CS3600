@@ -7,8 +7,10 @@ class MyRandom extends Random {
     static public int VAR = 10;
     static public int START = 11;
     static public boolean purelyRandom = false;
+    static public boolean insertLarge = false;
 
     private int amount = START;
+    private int count = 0;
     public void newOrder() {
         int newAmt = this.amount + this.K; 
         if ( newAmt >= MIN && newAmt <= MAX ) {
@@ -16,9 +18,14 @@ class MyRandom extends Random {
         }
     }
     public int nextInt( int id, int metal, int max ) {
+       ++count;
        if ( purelyRandom ) {
-           return super.nextInt( max );
+           return (int)111.4148809524 + (5- (int)10 * super.nextInt( max ) / max ); 
        }
+       if ( insertLarge && count % 3 == 0 ) {
+           return this.amount * 2;
+       }
+
        return this.amount + VAR * super.nextInt( max ) / max; 
     }
 }
